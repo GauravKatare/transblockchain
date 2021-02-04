@@ -1,0 +1,98 @@
+<html>
+    <body>
+        <div>
+            <input type="text" id="amount">
+            <p id='balance'></p>
+            <button id='deposit'>Deposit</button>
+            <button id='withdraw'>Withdraw</button>
+        </div>
+        <script  src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js" type="application/javascript" ></script>
+        <script  src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous" ></script>
+
+        <script>
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            var address="0x04371293d66065C451f4a2fC4e7c739461FD87fA";
+            var abi=[
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "val",
+				"type": "int256"
+			}
+		],
+		"name": "deposit",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "val",
+				"type": "int256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getbalance",
+		"outputs": [
+			{
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+            const signer = provider.getSigner();
+            
+            $(document).ready(async function()
+            {
+                const contract = new ethers.Contract(address, abi, provider);
+                const bal=await contract.getbalance();
+                $('#balance').html(parseInt(bal));
+            })
+
+            $('#deposit').click(async function(){
+                var amt=0;
+                amt=parseInt($('#amount').val());
+                await window.ethereum.enable();
+                const contract = new ethers.Contract(address, abi, signer);
+                const tx = await contract.deposit(amt);
+                //wait for the transaction to be mined
+                const receipt = await tx.wait();
+                console.log(receipt);
+            })
+
+            $('#withdraw').click(async function(){
+                var amt=0;
+                amt=parseInt($('#amount').val());
+                await window.ethereum.enable();
+                const contract = new ethers.Contract(address, abi, signer);
+                const tx = await contract.withdraw(amt);
+                //wait for the transaction to be mined
+                const receipt = await tx.wait();
+                console.log(receipt);
+            })
+
+        </script>
+    </body>
+</html>
